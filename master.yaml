@@ -1,0 +1,206 @@
+# Note : The Cloudformation Security Group IP address is open by default (testing purpose).
+# You should update Security Group Access with your own IP Address to ensure your instances security.
+#
+# Prerequisites
+# Before you can start this process, you need the following:
+# - Your AWS account must have one VPC available to be created in the selected region
+# - Amazon EC2 key pair
+# - Installed Domain in Route 53.
+#
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+    This is a master template to create a Mongo Replication Cluster.
+    The following task will be built
+
+    Last Modified: 30th December 2017
+    Author: Thinegan Ratnam <thinegan@thinegan.com>
+
+###############################################################################################################
+
+Parameters: 
+
+  PMOWNIP:
+    Description: "Update this with your own office/home public ip address"
+    Type: "String"
+
+  PMKeyName:
+    Description: "Enter an existing EC2 KeyPair."
+    Type: "String" 
+
+  PMEnvVPC:
+    Description: "Stack VPC Environment"
+    Type: "String"
+
+  PMmmsGroupId:
+    Description: "Agent mms GroupId."
+    Type: "String" 
+
+  PMmmsApiKey:
+    Description: "Agent mms Api Key."
+    Type: "String" 
+
+  PMDatabasePassword:
+    Description: "Enter a password."
+    Type: "String" 
+
+  PMAutomationPassword:
+    Description: "Enter a password."
+    Type: "String" 
+
+  PMTemplateURL:
+    Description: "Trying running from s3 bucket."
+    Type: "String"
+
+  PMRegionAMI:
+    Description: "Enter Region AMI."
+    Type: "String"
+
+  PMInstanceType:
+    Description: "Enter t2.micro or m1.small. Default is t2.medium."
+    Type: "String"
+
+  PMRaidVolGBSize:
+    Description: "Enter size of Raid volume for Data partition"
+    Type: "String"
+
+  DomainMongoMaster:
+    Description: "Domain Mongo Master."
+    Type: "String"
+
+  DomainMongoSecondary1:
+    Description: "Domain Mongo Secondary."
+    Type: "String"
+
+  DomainMongoSecondary2:
+    Description: "Domain Mongo Secondary."
+    Type: "String"
+
+  MongoReplicatesetName:
+    Description: "Mongo Cluster Name."
+    Type: "String"
+
+####### Condition Setup #######
+Conditions:
+  UseProdEnv: !Equals [ !Ref "PMInstanceType", "prod" ]
+
+###############################################################################################################
+###############################################################################################################
+
+Resources:
+
+  MyIAMRole:
+    Type: "AWS::CloudFormation::Stack"
+    # DeletionPolicy: Retain
+    # Condition: "UseProdEnv"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/mongo-iam.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMServerEnv: !Ref "AWS::StackName"
+
+  MySecurityGroup:
+    Type: "AWS::CloudFormation::Stack"
+    # DeletionPolicy: Retain
+    # Condition: "UseProdEnv"
+    DependsOn:
+    - "MyIAMRole"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/mongo-securitygroup.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMServerEnv: !Ref "AWS::StackName"
+        PMOWNIP: !Ref "PMOWNIP"
+        PMVpcCIDR:
+          Fn::ImportValue: !Sub "${PMEnvVPC}-PMVpcCIDR"
+        PMVPC:
+          Fn::ImportValue: !Sub "${PMEnvVPC}-VPC"
+        PMPublicNACL:
+          Fn::ImportValue: !Sub "${PMEnvVPC}-MyPublicNetworkACL"
+        PMPrivateNACL:
+          Fn::ImportValue: !Sub "${PMEnvVPC}-MyPrivateNetworkACL"
+
+  MyMongoSEC1EC2:
+    Type: "AWS::CloudFormation::Stack"
+    # DeletionPolicy: Retain
+    Condition: "UseProdEnv"
+    DependsOn:
+    - "MySecurityGroup"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/mongo-secondary1-ec2.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMServerEnv: !Ref "AWS::StackName"
+        PMKeyName: !Ref "PMKeyName"
+        PMEnvVPC: !Ref "PMEnvVPC"
+        PMInstanceType: !Ref "PMInstanceType"
+        PMRaidVolGBSize: !Ref "PMRaidVolGBSize"
+        PMmmsGroupId: !Ref "PMmmsGroupId"
+        PMmmsApiKey: !Ref "PMmmsApiKey"
+        PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
+        PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
+        PMRegionAMI: !Ref "PMRegionAMI"
+        PMDomainMongoSecondary1: !Ref "DomainMongoSecondary1"
+
+  MyMongoSEC2EC2:
+    Type: "AWS::CloudFormation::Stack"
+    # DeletionPolicy: Retain
+    Condition: "UseProdEnv"
+    DependsOn:
+    - "MySecurityGroup"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/mongo-secondary2-ec2.yaml"
+      TimeoutInMinutes: '5'
+      Parameters: 
+        PMServerEnv: !Ref "AWS::StackName"
+        PMKeyName: !Ref "PMKeyName"
+        PMEnvVPC: !Ref "PMEnvVPC"
+        PMInstanceType: !Ref "PMInstanceType"
+        PMRaidVolGBSize: !Ref "PMRaidVolGBSize"
+        PMmmsGroupId: !Ref "PMmmsGroupId"
+        PMmmsApiKey: !Ref "PMmmsApiKey"
+        PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
+        PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
+        PMRegionAMI: !Ref "PMRegionAMI"
+        PMDomainMongoSecondary2: !Ref "DomainMongoSecondary2"
+
+  MyMongoMSEC2:
+    Type: "AWS::CloudFormation::Stack"
+    # DeletionPolicy: Retain
+    Condition: "UseProdEnv"
+    DependsOn:
+    - "MyMongoSEC1EC2"
+    Properties:
+      TemplateURL: !Sub "${PMTemplateURL}/mongo-master-ec2.yaml"
+      TimeoutInMinutes: '5'
+      Parameters:
+        PMServerEnv: !Ref "AWS::StackName"
+        PMKeyName: !Ref "PMKeyName"
+        PMEnvVPC: !Ref "PMEnvVPC"
+        PMInstanceType: !Ref "PMInstanceType"
+        PMRaidVolGBSize: !Ref "PMRaidVolGBSize"
+        PMmmsGroupId: !Ref "PMmmsGroupId"
+        PMmmsApiKey: !Ref "PMmmsApiKey"
+        PMDatabasePassword: !Ref "PMDatabasePassword"
+        PMAutomationPassword: !Ref "PMAutomationPassword"
+        PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
+        PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
+        PMDomainMongoSecondary1: !Ref "DomainMongoSecondary1"
+        PMDomainMongoSecondary2: !Ref "DomainMongoSecondary2"
+        PMDomainMongoMaster: !Ref "DomainMongoMaster"
+        PMRegionAMI: !Ref "PMRegionAMI"
+
+Outputs:
+
+  MyMongoMSEC2:
+    Description: "A reference to Mongo Master Server"
+    Value: !Ref "DomainMongoMaster"
+
+  MyMongoSEC1EC2:
+    Description: "A reference to Mongo Secondary Server"
+    Value: !Ref "DomainMongoSecondary1"
+
+  MyMongoSEC2EC2:
+    Description: "A reference to Mongo Secondary Server"
+    Value: !Ref "DomainMongoSecondary2"
+

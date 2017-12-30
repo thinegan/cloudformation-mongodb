@@ -1,0 +1,86 @@
+# Note : The Cloudformation Security Group IP address is open by default (testing purpose).
+# You should update Security Group Access with your own IP Address to ensure your instances security.
+#
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+    This template contains the Security Groups and Network Access Control
+    required by our entire stack. We create them in a seperate nested template,
+    so they can be referenced by all of the other nested templates.
+
+Parameters:
+
+  PMServerEnv:
+    Description: "Server Environment name."
+    ConstraintDescription: "Choose an Environment from the drop down"
+    Type: "String"
+
+  PMVPC:
+    Description: "VPC to launch instances into"
+    Type: "AWS::EC2::VPC::Id"
+
+  PMVpcCIDR:
+    Description: "Please enter the IP range (CIDR notation) for this VPC"
+    Type: "String"
+
+  PMPublicNACL:
+    Description: "Public Network ACL Id"
+    Type: "String"
+
+  PMPrivateNACL:
+    Description: "Private Network ACL Id"
+    Type: "String"
+
+  PMOWNIP:
+    Description: "Update this with your own office/home public ip address"
+    Type: "String"
+
+
+Resources:
+  # By default we're just allowing access from the load balancer.  If you want to SSH 
+  # into the hosts, or expose non-load balanced services you can open their ports here.
+  MyMongoSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties: 
+      VpcId: !Ref "PMVPC"
+      GroupDescription: "Mongo Replication Cluster Security Group"
+      SecurityGroupIngress:
+        - IpProtocol: 'icmp'
+          FromPort: '-1'
+          ToPort: '-1'
+          CidrIp: '0.0.0.0/0'
+        - CidrIp: '0.0.0.0/0'
+          FromPort: "22"
+          IpProtocol: "tcp"
+          ToPort: "22"
+        - CidrIp: !Ref "PMVpcCIDR"
+          FromPort: "27017"
+          IpProtocol: "tcp"
+          ToPort: "27017"
+        - CidrIp: '172.30.0.0/16'
+          FromPort: "27017"
+          IpProtocol: "tcp"
+          ToPort: "27017"
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${PMServerEnv}-MyMongoSG"
+
+  MyMongoSGIngress1:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId:
+        Ref: "MyMongoSG"
+      IpProtocol: -1
+      SourceSecurityGroupId:
+        Ref: "MyMongoSG"
+
+Outputs:
+
+  MyMongoSG: 
+    Description: "A reference to the security group for Mongo Cluster hosts"
+    Value: !Ref "MyMongoSG"
+    Export:
+      Name: !Sub "${PMServerEnv}-MyMongoSG"
