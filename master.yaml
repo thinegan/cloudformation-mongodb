@@ -13,8 +13,8 @@ Description: >
     This is a master template to create a Mongo Replication Cluster.
     The following task will be built
 
-    Last Modified: 22nd December 2017
-    Author: Thinegan Ratnam <rthinegan@moneylion.com>
+    Last Modified: 30th December 2017
+    Author: Thinegan Ratnam <thinegan@thinegan.com>
 
 ###############################################################################################################
 
@@ -59,7 +59,6 @@ Parameters:
   PMInstanceType:
     Description: "Enter t2.micro or m1.small. Default is t2.medium."
     Type: "String"
-    Default: "t2.medium"
 
   PMRaidVolGBSize:
     Description: "Enter size of Raid volume for Data partition"
