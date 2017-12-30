@@ -1,0 +1,358 @@
+# Note, the development environment will only spin a min of 1 instance (Not HA Support)
+#
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+    This template deploys an instance for Mongo Secondary Instance.
+
+Parameters: 
+
+  PMServerEnv:
+    Description: "Server Environment name."
+    ConstraintDescription: "Choose an Environment from the drop down"
+    Type: "String"
+
+  PMDomainMongoSecondary1:
+    Description: "A reference to the Mongo Secondary 1 FQDN domain name"
+    Type: "String"
+
+  PMKeyName:
+    Description: "Enter an existing EC2 KeyPair. Default is mk2acc-nv"
+    Type: "String"
+
+  PMmmsGroupId:
+    Description: "Agent mms GroupId."
+    Type: "String" 
+
+  PMmmsApiKey:
+    Description: "Agent mms Api Key."
+    Type: "String" 
+
+  PMInstanceType: 
+    Description: "Enter t2.micro or m1.small. Default is m4.xlarge."
+    Type: "String"
+
+  PMRaidVolGBSize:
+    Description: "Enter size of Raid volume for Data partition"
+    Type: "String"
+
+  PMEnvVPC:
+    Description: "Stack VPC Environment"
+    Type: "String"
+
+  PMRegionAMI:
+    Description: "A reference to the Region AMI"
+    Type: "String"
+
+  PMMongoReplicatesetName:
+    Description: "A reference to the Mongo Replica Set"
+    Type: "String"
+
+  PMIAMS3CWInstanceProfile:
+    Description: "A reference to the IamInstanceProfile"
+    Type: "String"
+
+####### Condition Setup #######
+Conditions:
+  UseProdEnv: !Equals [ !Ref "PMServerEnv", "prodMongo" ]
+####### Condition Setup #######
+
+Resources:
+
+  MyMongoSEC1EC2:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      KeyName:
+        Ref: "PMKeyName"
+      EbsOptimized: "true"
+      AvailabilityZone: !Select [ '0', !GetAZs ]
+      InstanceType:
+        Ref: "PMInstanceType"
+      BlockDeviceMappings:
+        # Root Mount Device
+        - DeviceName: "xvda"
+        # - DeviceName: "/dev/sda1"
+          Ebs:
+            # Increasing the volume size will actually cause to spin another
+            # ec2 instance and shut down the existing old volume
+            VolumeSize: "50" # Default: 8GB
+            VolumeType: "gp2"
+            #DeleteOnTermination: "false"
+        # Additional Mount Device - /log
+        - DeviceName: "xvdb"
+          Ebs:
+            VolumeSize: "100"
+            VolumeType: "gp2"
+            #DeleteOnTermination: "false"
+      IamInstanceProfile:
+        Ref: "PMIAMS3CWInstanceProfile"
+      ImageId:
+        Ref: "PMRegionAMI"
+      SubnetId:
+        Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnet1"
+      SecurityGroupIds:
+        - Fn::ImportValue: !Sub "${PMServerEnv}-MyMongoSG"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${PMDomainMongoSecondary1}"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          apt-get update
+
+          # Init Start Slow (wait for 10 sec)
+          sleep 10
+
+          # Install AWS cfn-bootstrap utilities
+          apt-get -y install python-setuptools
+          easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+
+          # Pre-Install & Pre-setup
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get install -y xfsprogs dracut numactl
+          apt-get -q -y install mdadm --no-install-recommends
+          sudo touch /var/lib/cloud/instance/locale-check.skip
+          echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale
+          echo '${PMDomainMongoSecondary1}' > /etc/hostname
+          # Update hostname on the fly
+          hostname ${PMDomainMongoSecondary1}
+
+          # Append hostname that resolve to proper fqdn, hostname -f
+          # This is mainly use by monitoring server
+          echo '127.0.0.1 ${PMDomainMongoSecondary1}' >> /etc/hosts
+
+          # Create Partition (Leave the 2 empty space line below)
+          hdd="/dev/xvdb /dev/xvdc /dev/xvdd /dev/xvde /dev/xvdf"
+          for i in $hdd;do
+          echo "d
+          n
+          p
+          1
+
+
+          w
+          "|fdisk $i;done 
+
+          # Setup RAID 10
+          mdadm --create --verbose /dev/md0 -c 256 --level=10 --raid-devices=4 /dev/xvdc1 /dev/xvdd1 /dev/xvde1 /dev/xvdf1
+          mdadm --detail --scan --verbose >> /etc/mdadm/mdadm.conf
+
+          # Format Partition
+          mkfs.ext4 -F /dev/xvdb1
+          mkfs.xfs -f /dev/md0
+
+          # Create Directory
+          mkdir -p /data
+          mkdir -p /log
+          mkdir -p /journal
+
+          # Get Partition Blkid and Install fstab
+          PART_ID=$(blkid -o value -s UUID /dev/xvdb1)
+          RAID_ID=$(blkid -o value -s UUID /dev/md0)
+          echo "UUID=$PART_ID	/log	ext4" >> /etc/fstab
+          echo "UUID=$RAID_ID	/data	xfs defaults,auto,noatime,noexec 0 0" >> /etc/fstab
+
+          # Install mount & Change directory ownership
+          mount -a
+          chown -R mongodb:mongodb /data
+          chown -R mongodb:mongodb /log
+          chown -R mongodb:mongodb /journal
+
+          #Setup MongoDB
+          service mongod stop
+
+          #Cleanup & Inital setup
+           rm -rf /data/*
+           rm -rf /var/lib/mongodb/*
+
+          #Initial Conf Setup
+          echo "# Where and how to store data.
+          storage:
+            dbPath: /data
+            engine: \"wiredTiger\"
+            wiredTiger:
+              collectionConfig:
+                blockCompressor: snappy
+            directoryPerDB: true
+            # journal:
+            #   enabled: false
+
+          # where to write logging data.
+          systemLog:
+            destination: file
+            logAppend: true
+            logRotate: reopen
+            path: \"/log/mongod.log\"
+            timeStampFormat: iso8601-utc
+
+          # network interfaces
+          net:
+            port: 27017
+            bindIp: 0.0.0.0
+            # http:
+            #   enabled: false
+            #   RESTInterfaceEnabled: false
+
+          security:
+            authorization: \"disabled\"
+
+          setParameter:
+            enableLocalhostAuthBypass: false
+
+          replication:
+            replSetName: \"${PMMongoReplicatesetName}\"
+          " > /etc/mongod.conf
+
+          # MongoDB Start
+          service mongod start
+
+          # Install Cloud Mongo Automation
+          curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
+          dpkg -i mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
+          sed -i 's/mmsGroupId=/mmsGroupId=${PMmmsGroupId}/g' /etc/mongodb-mms/automation-agent.config
+          sed -i 's/mmsApiKey=/mmsApiKey=${PMmmsApiKey}/g' /etc/mongodb-mms/automation-agent.config
+          sed -i 's/logFile=\/var\/log\/mongodb-mms-automation\/automation-agent.log/logFile=\/log\/mongodb-mms-automation\/automation-agent.log/g' /etc/mongodb-mms/automation-agent.config
+          systemctl start mongodb-mms-automation-agent.service
+
+          # fixes for, WARNING: You are running on a NUMA machine.
+          # /usr/bin/numactl --interleave=all mongod
+
+          # Signal Terminate
+          /usr/local/bin/cfn-signal -e 0 -r 'server setup complete' "${WaitHandle}"  > /tmp/userdata.log
+
+  WaitHandle:
+    Type: "AWS::CloudFormation::WaitConditionHandle"
+
+  WaitCondition:
+    Type: "AWS::CloudFormation::WaitCondition"
+    Properties:
+      Handle: !Ref "WaitHandle"
+      Timeout: '600'
+
+  # Create New Volume (Raid10 - /data)
+  NewVolume1:
+    Type: "AWS::EC2::Volume"
+    Properties:
+      Size: !Ref "PMRaidVolGBSize"
+      VolumeType: "gp2"
+      Encrypted: 'true'
+      AvailabilityZone:
+        Fn::GetAtt:
+        - "MyMongoSEC1EC2"
+        - "AvailabilityZone"
+      Tags:
+      - Key: "Name"
+        Value: !Sub "${PMDomainMongoSecondary1}-/data"
+    DeletionPolicy: "Delete"
+
+  # Create New Volume (Raid10 - /data)
+  NewVolume2:
+    Type: "AWS::EC2::Volume"
+    Properties:
+      Size: !Ref "PMRaidVolGBSize"
+      VolumeType: "gp2"
+      Encrypted: 'true'
+      AvailabilityZone:
+        Fn::GetAtt:
+        - "MyMongoSEC1EC2"
+        - "AvailabilityZone"
+      Tags:
+      - Key: "Name"
+        Value: !Sub "${PMDomainMongoSecondary1}-/data"
+    DeletionPolicy: "Delete"
+
+  # Create New Volume (Raid10 - /data)
+  NewVolume3:
+    Type: "AWS::EC2::Volume"
+    Properties:
+      Size: !Ref "PMRaidVolGBSize"
+      VolumeType: "gp2"
+      Encrypted: 'true'
+      AvailabilityZone:
+        Fn::GetAtt:
+        - "MyMongoSEC1EC2"
+        - "AvailabilityZone"
+      Tags:
+      - Key: "Name"
+        Value: !Sub "${PMDomainMongoSecondary1}-/data"
+    DeletionPolicy: "Delete"
+
+  # Create New Volume (Raid10 - /data)
+  NewVolume4:
+    Type: "AWS::EC2::Volume"
+    Properties:
+      Size: !Ref "PMRaidVolGBSize"
+      VolumeType: "gp2"
+      Encrypted: 'true'
+      AvailabilityZone:
+        Fn::GetAtt:
+        - "MyMongoSEC1EC2"
+        - "AvailabilityZone"
+      Tags:
+      - Key: "Name"
+        Value: !Sub "${PMDomainMongoSecondary1}-/data"
+    DeletionPolicy: "Delete"
+
+  # Attach new volume to the existing EC2 instance
+  MountPoint1:
+    Type: "AWS::EC2::VolumeAttachment"
+    Properties:
+      InstanceId:
+        Ref: "MyMongoSEC1EC2"
+      VolumeId:
+        Ref: "NewVolume1"
+      Device: "xvdc"
+
+  # Attach new volume to the existing EC2 instance
+  MountPoint2:
+    Type: "AWS::EC2::VolumeAttachment"
+    Properties:
+      InstanceId:
+        Ref: "MyMongoSEC1EC2"
+      VolumeId:
+        Ref: "NewVolume2"
+      Device: "xvdd"
+
+  # Attach new volume to the existing EC2 instance
+  MountPoint3:
+    Type: "AWS::EC2::VolumeAttachment"
+    Properties:
+      InstanceId:
+        Ref: "MyMongoSEC1EC2"
+      VolumeId:
+        Ref: "NewVolume3"
+      Device: "xvde"
+
+  # Attach new volume to the existing EC2 instance
+  MountPoint4:
+    Type: "AWS::EC2::VolumeAttachment"
+    Properties:
+      InstanceId:
+        Ref: "MyMongoSEC1EC2"
+      VolumeId:
+        Ref: "NewVolume4"
+      Device: "xvdf"
+
+  DNSRecordMongoSEC1EC2:
+    Type: "AWS::Route53::RecordSet"
+    DependsOn:
+    - "MyMongoSEC1EC2"
+    Properties:
+      HostedZoneName: !Sub "${PMDomainMongoSecondary1}."
+      Comment: "DNS name for Mongo Secondary 1."
+      Name: !Sub "${PMDomainMongoSecondary1}."
+      Type: 'A'
+      TTL: '300'
+      ResourceRecords:
+      - Fn::GetAtt:
+        - "MyMongoSEC1EC2"
+        - "PrivateIp"
+
+Outputs:
+
+  MyMongoSEC1EC2IPAddress:
+    Description: "Private IP address of the new EC2 instance"
+    Value:
+      Fn::GetAtt:
+      - "MyMongoSEC1EC2"
+      - "PrivateIp"
