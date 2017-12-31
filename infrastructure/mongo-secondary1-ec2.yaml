@@ -70,7 +70,8 @@ Resources:
         Ref: "PMInstanceType"
       BlockDeviceMappings:
         # Root Mount Device
-        - DeviceName: "xvda"
+        - DeviceName: "/dev/xvda"
+        # - DeviceName: "xvda"
         # - DeviceName: "/dev/sda1"
           Ebs:
             # Increasing the volume size will actually cause to spin another
