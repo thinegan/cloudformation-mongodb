@@ -20,6 +20,10 @@ Parameters:
     Description: "Enter an existing EC2 KeyPair. Default is mk2acc-nv"
     Type: "String"
 
+  PMmmsVersion:
+    Description: "Agent mms Version."
+    Type: "String" 
+
   PMmmsGroupId:
     Description: "Agent mms GroupId."
     Type: "String" 
@@ -113,7 +117,7 @@ Resources:
           apt-get -y install python-setuptools
           easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
 
-          # install mongodb
+          # install mongodb (3.6.x)
           apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
           echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.6 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
           apt-get update && apt-get install -y mongodb-org
@@ -188,8 +192,6 @@ Resources:
               collectionConfig:
                 blockCompressor: snappy
             directoryPerDB: true
-            # journal:
-            #   enabled: false
 
           # where to write logging data.
           systemLog:
@@ -218,8 +220,8 @@ Resources:
           service mongod start
 
           # Install Cloud Mongo Automation
-          curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
-          dpkg -i mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
+          curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_${PMmmsVersion}_amd64.ubuntu1604.deb
+          dpkg -i mongodb-mms-automation-agent-manager_${PMmmsVersion}_amd64.ubuntu1604.deb
           sed -i 's/mmsGroupId=/mmsGroupId=${PMmmsGroupId}/g' /etc/mongodb-mms/automation-agent.config
           sed -i 's/mmsApiKey=/mmsApiKey=${PMmmsApiKey}/g' /etc/mongodb-mms/automation-agent.config
           sed -i 's/logFile=\/var\/log\/mongodb-mms-automation\/automation-agent.log/logFile=\/log\/mongodb-mms-automation\/automation-agent.log/g' /etc/mongodb-mms/automation-agent.config

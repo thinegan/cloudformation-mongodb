@@ -29,8 +29,12 @@ Parameters:
     Type: "String" 
 
   PMEnvVPC:
-    Description: "Stack VPC Environment"
+    Description: "Stack VPC Environment."
     Type: "String"
+
+  PMmmsVersion:
+    Description: "Agent mms Version."
+    Type: "String" 
 
   PMmmsGroupId:
     Description: "Agent mms GroupId."
@@ -61,7 +65,7 @@ Parameters:
     Type: "String"
 
   PMRaidVolGBSize:
-    Description: "Enter size of Raid volume for Data partition"
+    Description: "Enter size of Raid volume for Data partition."
     Type: "String"
 
   PMHostedZone:
@@ -127,7 +131,7 @@ Resources:
   MyMongoSEC1EC2:
     Type: "AWS::CloudFormation::Stack"
     # DeletionPolicy: Retain
-    Condition: "UseProdEnv"
+    # Condition: "UseProdEnv"
     DependsOn:
     - "MySecurityGroup"
     Properties:
@@ -139,6 +143,7 @@ Resources:
         PMEnvVPC: !Ref "PMEnvVPC"
         PMInstanceType: !Ref "PMInstanceType"
         PMRaidVolGBSize: !Ref "PMRaidVolGBSize"
+        PMmmsVersion: !Ref "PMmmsVersion"
         PMmmsGroupId: !Ref "PMmmsGroupId"
         PMmmsApiKey: !Ref "PMmmsApiKey"
         PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
