@@ -341,7 +341,7 @@ Resources:
     DependsOn:
     - "MyMongoSEC2EC2"
     Properties:
-      HostedZoneName: !Sub "${PMDomainMongoSecondary2}."
+      HostedZoneName: !Sub "${PMHostedZone}."
       Comment: "DNS name for Mongo Secondary 2."
       Name: !Sub "${PMDomainMongoSecondary2}."
       Type: 'A'
