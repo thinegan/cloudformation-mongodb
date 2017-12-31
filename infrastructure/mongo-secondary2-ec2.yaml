@@ -36,6 +36,10 @@ Parameters:
     Description: "Agent mms Api Key."
     Type: "String" 
 
+  PMHostedZone:
+    Description: "Hosted Domain Zone."
+    Type: "String"
+
   PMInstanceType: 
     Description: "Enter t2.micro or m1.small. Default is m4.xlarge."
     Type: "String"
