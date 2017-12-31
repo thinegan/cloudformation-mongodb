@@ -28,7 +28,11 @@ Parameters:
     Description: "Agent mms Api Key."
     Type: "String" 
 
-  PMInstanceType: 
+  PMHostedZone:
+    Description: "Hosted Domain Zone."
+    Type: "String"
+
+  PMInstanceType:
     Description: "Enter t2.micro or m1.small. Default is m4.xlarge."
     Type: "String"
 
@@ -345,7 +349,7 @@ Resources:
     DependsOn:
     - "MyMongoSEC1EC2"
     Properties:
-      HostedZoneName: !Sub "${PMDomainMongoSecondary1}."
+      HostedZoneName: !Sub "${PMHostedZone}."
       Comment: "DNS name for Mongo Secondary 1."
       Name: !Sub "${PMDomainMongoSecondary1}."
       Type: 'A'

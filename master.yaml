@@ -64,6 +64,10 @@ Parameters:
     Description: "Enter size of Raid volume for Data partition"
     Type: "String"
 
+  PMHostedZone:
+    Description: "Hosted Domain Zone."
+    Type: "String"
+
   DomainMongoMaster:
     Description: "Domain Mongo Master."
     Type: "String"
@@ -140,6 +144,7 @@ Resources:
         PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
         PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
         PMRegionAMI: !Ref "PMRegionAMI"
+        PMHostedZone: !Ref "PMHostedZone"
         PMDomainMongoSecondary1: !Ref "DomainMongoSecondary1"
 
   MyMongoSEC2EC2:
