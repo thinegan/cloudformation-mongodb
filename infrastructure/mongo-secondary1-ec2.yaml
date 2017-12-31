@@ -132,101 +132,101 @@ Resources:
           # This is mainly use by monitoring server
           echo '127.0.0.1 ${PMDomainMongoSecondary1}' >> /etc/hosts
 
-          # Create Partition (Leave the 2 empty space line below)
-          hdd="/dev/xvdb /dev/xvdc /dev/xvdd /dev/xvde /dev/xvdf"
-          for i in $hdd;do
-          echo "d
-          n
-          p
-          1
+          # # Create Partition (Leave the 2 empty space line below)
+          # hdd="/dev/xvdb /dev/xvdc /dev/xvdd /dev/xvde /dev/xvdf"
+          # for i in $hdd;do
+          # echo "d
+          # n
+          # p
+          # 1
 
 
-          w
-          "|fdisk $i;done 
+          # w
+          # "|fdisk $i;done 
 
-          # Setup RAID 10
-          mdadm --create --verbose /dev/md0 -c 256 --level=10 --raid-devices=4 /dev/xvdc1 /dev/xvdd1 /dev/xvde1 /dev/xvdf1
-          mdadm --detail --scan --verbose >> /etc/mdadm/mdadm.conf
+          # # Setup RAID 10
+          # mdadm --create --verbose /dev/md0 -c 256 --level=10 --raid-devices=4 /dev/xvdc1 /dev/xvdd1 /dev/xvde1 /dev/xvdf1
+          # mdadm --detail --scan --verbose >> /etc/mdadm/mdadm.conf
 
-          # Format Partition
-          mkfs.ext4 -F /dev/xvdb1
-          mkfs.xfs -f /dev/md0
+          # # Format Partition
+          # mkfs.ext4 -F /dev/xvdb1
+          # mkfs.xfs -f /dev/md0
 
-          # Create Directory
-          mkdir -p /data
-          mkdir -p /log
-          mkdir -p /journal
+          # # Create Directory
+          # mkdir -p /data
+          # mkdir -p /log
+          # mkdir -p /journal
 
-          # Get Partition Blkid and Install fstab
-          PART_ID=$(blkid -o value -s UUID /dev/xvdb1)
-          RAID_ID=$(blkid -o value -s UUID /dev/md0)
-          echo "UUID=$PART_ID	/log	ext4" >> /etc/fstab
-          echo "UUID=$RAID_ID	/data	xfs defaults,auto,noatime,noexec 0 0" >> /etc/fstab
+          # # Get Partition Blkid and Install fstab
+          # PART_ID=$(blkid -o value -s UUID /dev/xvdb1)
+          # RAID_ID=$(blkid -o value -s UUID /dev/md0)
+          # echo "UUID=$PART_ID	/log	ext4" >> /etc/fstab
+          # echo "UUID=$RAID_ID	/data	xfs defaults,auto,noatime,noexec 0 0" >> /etc/fstab
 
-          # Install mount & Change directory ownership
-          mount -a
-          chown -R mongodb:mongodb /data
-          chown -R mongodb:mongodb /log
-          chown -R mongodb:mongodb /journal
+          # # Install mount & Change directory ownership
+          # mount -a
+          # chown -R mongodb:mongodb /data
+          # chown -R mongodb:mongodb /log
+          # chown -R mongodb:mongodb /journal
 
-          #Setup MongoDB
-          service mongod stop
+          # #Setup MongoDB
+          # service mongod stop
 
-          #Cleanup & Inital setup
-           rm -rf /data/*
-           rm -rf /var/lib/mongodb/*
+          # #Cleanup & Inital setup
+          #  rm -rf /data/*
+          #  rm -rf /var/lib/mongodb/*
 
-          #Initial Conf Setup
-          echo "# Where and how to store data.
-          storage:
-            dbPath: /data
-            engine: \"wiredTiger\"
-            wiredTiger:
-              collectionConfig:
-                blockCompressor: snappy
-            directoryPerDB: true
-            # journal:
-            #   enabled: false
+          # #Initial Conf Setup
+          # echo "# Where and how to store data.
+          # storage:
+          #   dbPath: /data
+          #   engine: \"wiredTiger\"
+          #   wiredTiger:
+          #     collectionConfig:
+          #       blockCompressor: snappy
+          #   directoryPerDB: true
+          #   # journal:
+          #   #   enabled: false
 
-          # where to write logging data.
-          systemLog:
-            destination: file
-            logAppend: true
-            logRotate: reopen
-            path: \"/log/mongod.log\"
-            timeStampFormat: iso8601-utc
+          # # where to write logging data.
+          # systemLog:
+          #   destination: file
+          #   logAppend: true
+          #   logRotate: reopen
+          #   path: \"/log/mongod.log\"
+          #   timeStampFormat: iso8601-utc
 
-          # network interfaces
-          net:
-            port: 27017
-            bindIp: 0.0.0.0
-            # http:
-            #   enabled: false
-            #   RESTInterfaceEnabled: false
+          # # network interfaces
+          # net:
+          #   port: 27017
+          #   bindIp: 0.0.0.0
+          #   # http:
+          #   #   enabled: false
+          #   #   RESTInterfaceEnabled: false
 
-          security:
-            authorization: \"disabled\"
+          # security:
+          #   authorization: \"disabled\"
 
-          setParameter:
-            enableLocalhostAuthBypass: false
+          # setParameter:
+          #   enableLocalhostAuthBypass: false
 
-          replication:
-            replSetName: \"${PMMongoReplicatesetName}\"
-          " > /etc/mongod.conf
+          # replication:
+          #   replSetName: \"${PMMongoReplicatesetName}\"
+          # " > /etc/mongod.conf
 
-          # MongoDB Start
-          service mongod start
+          # # MongoDB Start
+          # service mongod start
 
-          # Install Cloud Mongo Automation
-          curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
-          dpkg -i mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
-          sed -i 's/mmsGroupId=/mmsGroupId=${PMmmsGroupId}/g' /etc/mongodb-mms/automation-agent.config
-          sed -i 's/mmsApiKey=/mmsApiKey=${PMmmsApiKey}/g' /etc/mongodb-mms/automation-agent.config
-          sed -i 's/logFile=\/var\/log\/mongodb-mms-automation\/automation-agent.log/logFile=\/log\/mongodb-mms-automation\/automation-agent.log/g' /etc/mongodb-mms/automation-agent.config
-          systemctl start mongodb-mms-automation-agent.service
+          # # Install Cloud Mongo Automation
+          # curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
+          # dpkg -i mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
+          # sed -i 's/mmsGroupId=/mmsGroupId=${PMmmsGroupId}/g' /etc/mongodb-mms/automation-agent.config
+          # sed -i 's/mmsApiKey=/mmsApiKey=${PMmmsApiKey}/g' /etc/mongodb-mms/automation-agent.config
+          # sed -i 's/logFile=\/var\/log\/mongodb-mms-automation\/automation-agent.log/logFile=\/log\/mongodb-mms-automation\/automation-agent.log/g' /etc/mongodb-mms/automation-agent.config
+          # systemctl start mongodb-mms-automation-agent.service
 
-          # fixes for, WARNING: You are running on a NUMA machine.
-          # /usr/bin/numactl --interleave=all mongod
+          # # fixes for, WARNING: You are running on a NUMA machine.
+          # # /usr/bin/numactl --interleave=all mongod
 
           # Signal Terminate
           /usr/local/bin/cfn-signal -e 0 -r 'server setup complete' "${WaitHandle}"  > /tmp/userdata.log
