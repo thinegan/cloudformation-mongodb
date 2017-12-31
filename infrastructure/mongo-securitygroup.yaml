@@ -57,6 +57,11 @@ Resources:
           FromPort: "27017"
           IpProtocol: "tcp"
           ToPort: "27017"
+          # Testing - Dev
+        - CidrIp: '0.0.0.0/0'
+          FromPort: "27017"
+          IpProtocol: "tcp"
+          ToPort: "27017"
       SecurityGroupEgress:
         - IpProtocol: '-1'
           CidrIp: '0.0.0.0/0'
