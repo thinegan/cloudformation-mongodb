@@ -67,7 +67,7 @@ Resources:
     Properties:
       KeyName:
         Ref: "PMKeyName"
-      EbsOptimized: "true"
+      # EbsOptimized: "true"
       AvailabilityZone: !Select [ '1', !GetAZs ]
       InstanceType:
         Ref: "PMInstanceType"
