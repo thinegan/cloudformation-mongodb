@@ -117,7 +117,9 @@ Resources:
           apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
           echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.6 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
           apt-get update && apt-get install -y mongodb-org
-          # apt-get install -y mongodb-org
+          curl 'https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d' -o /etc/init.d/mongod
+          chmod +x /etc/init.d/mongod
+          update-rc.d mongod defaults
 
           # Pre-Install & Pre-setup
           export DEBIAN_FRONTEND=noninteractive
