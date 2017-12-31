@@ -64,7 +64,7 @@ Resources:
     Properties:
       KeyName:
         Ref: "PMKeyName"
-      EbsOptimized: "true"
+      # EbsOptimized: "true"
       AvailabilityZone: !Select [ '0', !GetAZs ]
       InstanceType:
         Ref: "PMInstanceType"
@@ -75,13 +75,13 @@ Resources:
           Ebs:
             # Increasing the volume size will actually cause to spin another
             # ec2 instance and shut down the existing old volume
-            VolumeSize: "50" # Default: 8GB
+            VolumeSize: "10" # Default: 8GB
             VolumeType: "gp2"
             #DeleteOnTermination: "false"
         # Additional Mount Device - /log
         - DeviceName: "xvdb"
           Ebs:
-            VolumeSize: "100"
+            VolumeSize: "10"
             VolumeType: "gp2"
             #DeleteOnTermination: "false"
       IamInstanceProfile:
