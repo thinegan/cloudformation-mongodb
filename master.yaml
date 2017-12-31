@@ -44,14 +44,6 @@ Parameters:
     Description: "Agent mms Api Key."
     Type: "String" 
 
-  PMDatabasePassword:
-    Description: "Enter a password."
-    Type: "String" 
-
-  PMAutomationPassword:
-    Description: "Enter a password."
-    Type: "String" 
-
   PMTemplateURL:
     Description: "Trying running from s3 bucket."
     Type: "String"
@@ -194,8 +186,6 @@ Resources:
         PMmmsVersion: !Ref "PMmmsVersion"
         PMmmsGroupId: !Ref "PMmmsGroupId"
         PMmmsApiKey: !Ref "PMmmsApiKey"
-        PMDatabasePassword: !Ref "PMDatabasePassword"
-        PMAutomationPassword: !Ref "PMAutomationPassword"
         PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
         PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
         PMHostedZone: !Ref "PMHostedZone"

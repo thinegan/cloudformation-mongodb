@@ -12,24 +12,6 @@ Parameters:
     ConstraintDescription: "Choose an Environment from the drop down"
     Type: "String"
 
-  PMDatabasePassword:
-    NoEcho: 'true'
-    Type: "String"
-    Description: "Database admin account password"
-    MinLength: '6'
-    MaxLength: '41'
-    AllowedPattern: "[a-zA-Z0-9]*"
-    ConstraintDescription: "Password must contain only alphanumeric characters."
-
-  PMAutomationPassword:
-    NoEcho: 'true'
-    Type: "String"
-    Description: "Database Automation account password"
-    MinLength: '6'
-    MaxLength: '41'
-    AllowedPattern: "[a-zA-Z0-9]*"
-    ConstraintDescription: "Password must contain only alphanumeric characters."
-
   PMKeyName:
     Description: "Enter an existing EC2 KeyPair. Default is mk2acc-nv"
     Type: "String"
