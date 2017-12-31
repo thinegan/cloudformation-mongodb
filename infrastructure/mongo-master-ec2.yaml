@@ -38,6 +38,10 @@ Parameters:
     Description: "Stack VPC Environment"
     Type: "String"
 
+  PMmmsVersion:
+    Description: "Agent mms Version."
+    Type: "String" 
+
   PMmmsGroupId:
     Description: "Agent mms GroupId."
     Type: "String" 
@@ -85,23 +89,24 @@ Resources:
     Properties:
       KeyName:
         Ref: "PMKeyName"
-      EbsOptimized: "true"
-      AvailabilityZone: !Select [ '2', !GetAZs ]
+      # EbsOptimized: "true"
+      AvailabilityZone: !Select [ '1', !GetAZs ]
       InstanceType:
         Ref: "PMInstanceType"
       BlockDeviceMappings:
         # Root Mount Device
-        - DeviceName: "xvda"
+        - DeviceName: "/dev/xvda"
+        # - DeviceName: "xvda"
           Ebs:
             # Increasing the volume size will actually cause to spin another
             # ec2 instance and shut down the existing old volume
-            VolumeSize: "50" # Default: 8GB
+            VolumeSize: "10" # Default: 8GB
             VolumeType: "gp2"
             #DeleteOnTermination: "false"
         # Additional Mount Device - /log
         - DeviceName: "xvdb"
           Ebs:
-            VolumeSize: "100"
+            VolumeSize: "10"
             VolumeType: "gp2"
             #DeleteOnTermination: "false"
       IamInstanceProfile:
@@ -109,7 +114,8 @@ Resources:
       ImageId:
         Ref: "PMRegionAMI"
       SubnetId:
-        Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnet3"
+        Fn::ImportValue: !Sub "${PMEnvVPC}-PublicSubnet2"
+        # Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnet3"
       SecurityGroupIds:
         - Fn::ImportValue: !Sub "${PMServerEnv}-MyMongoSG"
       Tags:
@@ -127,10 +133,13 @@ Resources:
           apt-get -y install python-setuptools
           easy_install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
 
-          # install mongodb
+          # install mongodb (3.6.x)
           apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
           echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.6 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.6.list
           apt-get update && apt-get install -y mongodb-org
+          curl 'https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d' -o /etc/init.d/mongod
+          chmod +x /etc/init.d/mongod
+          update-rc.d mongod defaults
 
           # Pre-Install & Pre-setup
           export DEBIAN_FRONTEND=noninteractive
@@ -199,8 +208,6 @@ Resources:
               collectionConfig:
                 blockCompressor: snappy
             directoryPerDB: true
-            # journal:
-            #   enabled: false
 
           # where to write logging data.
           systemLog:
@@ -214,9 +221,6 @@ Resources:
           net:
             port: 27017
             bindIp: 0.0.0.0
-            # http:
-            #   enabled: false
-            #   RESTInterfaceEnabled: false
 
           security:
             authorization: \"disabled\"
@@ -262,15 +266,12 @@ Resources:
           /usr/bin/mongo --host ${PMDomainMongoMaster} /tmp/replicaSetAddCluster.js > /tmp/replicaSetAddCluster.log
 
           # Install Cloud Mongo Automation
-          curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
-          dpkg -i mongodb-mms-automation-agent-manager_4.5.9.2395-1_amd64.ubuntu1604.deb
+          curl -OL https://cloud.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-manager_${PMmmsVersion}_amd64.ubuntu1604.deb
+          dpkg -i mongodb-mms-automation-agent-manager_${PMmmsVersion}_amd64.ubuntu1604.deb
           sed -i 's/mmsGroupId=/mmsGroupId=${PMmmsGroupId}/g' /etc/mongodb-mms/automation-agent.config
           sed -i 's/mmsApiKey=/mmsApiKey=${PMmmsApiKey}/g' /etc/mongodb-mms/automation-agent.config
           sed -i 's/logFile=\/var\/log\/mongodb-mms-automation\/automation-agent.log/logFile=\/log\/mongodb-mms-automation\/automation-agent.log/g' /etc/mongodb-mms/automation-agent.config
           systemctl start mongodb-mms-automation-agent.service
-
-          # fixes for, WARNING: You are running on a NUMA machine.
-          # /usr/bin/numactl --interleave=all mongod
 
           # Signal Terminate
           /usr/local/bin/cfn-signal -e 0 -r 'server setup complete' "${WaitHandle}"  > /tmp/userdata.log
