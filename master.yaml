@@ -127,7 +127,7 @@ Resources:
   MyMongoSEC1EC2:
     Type: "AWS::CloudFormation::Stack"
     # DeletionPolicy: Retain
-    Condition: "UseProdEnv"
+    # Condition: "UseProdEnv"
     DependsOn:
     - "MySecurityGroup"
     Properties:
