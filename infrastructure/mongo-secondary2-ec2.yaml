@@ -76,19 +76,16 @@ Resources:
       BlockDeviceMappings:
         # Root Mount Device
         - DeviceName: "/dev/xvda"
-        # - DeviceName: "xvda"
           Ebs:
             # Increasing the volume size will actually cause to spin another
             # ec2 instance and shut down the existing old volume
-            VolumeSize: "10" # Default: 8GB
+            VolumeSize: "10" # Format: GB
             VolumeType: "gp2"
-            #DeleteOnTermination: "false"
         # Additional Mount Device - /log
         - DeviceName: "xvdb"
           Ebs:
             VolumeSize: "10"
             VolumeType: "gp2"
-            #DeleteOnTermination: "false"
       IamInstanceProfile:
         Ref: "PMIAMS3CWInstanceProfile"
       ImageId:
