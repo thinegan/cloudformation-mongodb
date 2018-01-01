@@ -44,6 +44,10 @@ Parameters:
     Description: "Enter size of Raid Size for Data partition"
     Type: "String"
 
+  PMEbsOptimized:
+    Description: "Set EBS Optimize support true or false."
+    Type: "String"
+
   PMRegionAMI:
     Description: "A reference to the Region AMI"
     Type: "String"
@@ -73,12 +77,10 @@ Resources:
   MyMongoMSEC2:
     Type: "AWS::EC2::Instance"
     Properties:
-      KeyName:
-        Ref: "PMKeyName"
-      # EbsOptimized: "true"
+      KeyName: !Ref "PMKeyName"
+      EbsOptimized: !Ref "PMEbsOptimized"
       AvailabilityZone: !Select [ '1', !GetAZs ]
-      InstanceType:
-        Ref: "PMInstanceType"
+      InstanceType: !Ref "PMInstanceType"
       BlockDeviceMappings:
         # Root Mount Device
         - DeviceName: "/dev/xvda"

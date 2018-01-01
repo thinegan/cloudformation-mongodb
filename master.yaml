@@ -48,6 +48,10 @@ Parameters:
     Description: "Trying running from s3 bucket."
     Type: "String"
 
+  PMEbsOptimized:
+    Description: "Set EBS Optimize support true or false."
+    Type: "String"
+
   PMRegionAMI:
     Description: "Enter Region AMI."
     Type: "String"
@@ -140,6 +144,7 @@ Resources:
         PMmmsApiKey: !Ref "PMmmsApiKey"
         PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
         PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
+        PMEbsOptimized: !Ref "PMEbsOptimized"
         PMRegionAMI: !Ref "PMRegionAMI"
         PMHostedZone: !Ref "PMHostedZone"
         PMDomainMongoSecondary1: !Ref "DomainMongoSecondary1"
@@ -164,6 +169,7 @@ Resources:
         PMmmsApiKey: !Ref "PMmmsApiKey"
         PMIAMS3CWInstanceProfile: !GetAtt "MyIAMRole.Outputs.IAMS3CWInstanceProfile"
         PMMongoReplicatesetName: !Ref "MongoReplicatesetName"
+        PMEbsOptimized: !Ref "PMEbsOptimized"
         PMRegionAMI: !Ref "PMRegionAMI"
         PMHostedZone: !Ref "PMHostedZone"
         PMDomainMongoSecondary2: !Ref "DomainMongoSecondary2"
@@ -193,6 +199,7 @@ Resources:
         PMDomainMongoSecondary2: !Ref "DomainMongoSecondary2"
         PMDomainMongoMaster: !Ref "DomainMongoMaster"
         PMRegionAMI: !Ref "PMRegionAMI"
+        PMEbsOptimized: !Ref "PMEbsOptimized"
 
 Outputs:
 
