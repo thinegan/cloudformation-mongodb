@@ -225,7 +225,6 @@ Resources:
           while [ -z $(echo "db.serverStatus()" | mongo 127.0.0.1/test 2>&1 | awk ' /uptimeMillis/ { print $3}') ]; do echo -e "Waiting to connect to mongod"; sleep 10; done
 
           # MongoDB Process Start Slow (wait for 5 sec)
-          #sleep 30
           # Stage 1 : Initialize Replication Cluster
           cat <<EOF > /tmp/replicaSetConfigInit.js
           rs.initiate();
