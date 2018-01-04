@@ -96,8 +96,7 @@ Resources:
       ImageId:
         Ref: "PMRegionAMI"
       SubnetId:
-        Fn::ImportValue: !Sub "${PMEnvVPC}-PublicSubnet1"
-        # Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnet1"
+        Fn::ImportValue: !Sub "${PMEnvVPC}-PrivateSubnet1"
       SecurityGroupIds:
         - Fn::ImportValue: !Sub "${PMServerEnv}-MyMongoSG"
       Tags:
