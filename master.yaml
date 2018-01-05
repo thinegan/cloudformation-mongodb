@@ -91,7 +91,7 @@ Resources:
 
   MyIAMRole:
     Type: "AWS::CloudFormation::Stack"
-    # DeletionPolicy: Retain
+    DeletionPolicy: Retain
     # Condition: "UseProdEnv"
     Properties:
       TemplateURL: !Sub "${PMTemplateURL}/mongo-iam.yaml"
@@ -101,7 +101,7 @@ Resources:
 
   MySecurityGroup:
     Type: "AWS::CloudFormation::Stack"
-    # DeletionPolicy: Retain
+    DeletionPolicy: Retain
     # Condition: "UseProdEnv"
     DependsOn:
     - "MyIAMRole"
@@ -121,7 +121,7 @@ Resources:
 
   MyMongoSEC1EC2:
     Type: "AWS::CloudFormation::Stack"
-    # DeletionPolicy: Retain
+    DeletionPolicy: Retain
     # Condition: "UseProdEnv"
     DependsOn:
     - "MySecurityGroup"
@@ -146,7 +146,7 @@ Resources:
 
   MyMongoSEC2EC2:
     Type: "AWS::CloudFormation::Stack"
-    # DeletionPolicy: Retain
+    DeletionPolicy: Retain
     # Condition: "UseProdEnv"
     DependsOn:
     - "MySecurityGroup"
@@ -171,7 +171,7 @@ Resources:
 
   MyMongoMSEC2:
     Type: "AWS::CloudFormation::Stack"
-    # DeletionPolicy: Retain
+    DeletionPolicy: Retain
     # Condition: "UseProdEnv"
     DependsOn:
     - "MyMongoSEC1EC2"
