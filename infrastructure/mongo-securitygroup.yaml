@@ -31,10 +31,6 @@ Parameters:
     Description: "Private Network ACL Id"
     Type: "String"
 
-  PMOWNIP:
-    Description: "Update this with your own office/home public ip address"
-    Type: "String"
-
 
 Resources:
   # By default we're just allowing access from the load balancer.  If you want to SSH 

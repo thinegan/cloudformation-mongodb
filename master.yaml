@@ -20,10 +20,6 @@ Description: >
 
 Parameters: 
 
-  PMOWNIP:
-    Description: "Update this with your own office/home public ip address"
-    Type: "String"
-
   PMKeyName:
     Description: "Enter an existing EC2 KeyPair."
     Type: "String" 
@@ -114,7 +110,6 @@ Resources:
       TimeoutInMinutes: '5'
       Parameters:
         PMServerEnv: !Ref "AWS::StackName"
-        PMOWNIP: !Ref "PMOWNIP"
         PMVpcCIDR:
           Fn::ImportValue: !Sub "${PMEnvVPC}-PMVpcCIDR"
         PMVPC:
