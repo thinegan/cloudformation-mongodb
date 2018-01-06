@@ -1,17 +1,10 @@
-# Deploying Web Application Architecture with AWS
+# Deploying MongoDB Replicaset Architecture in AWS Private VPC
 
 This reference architecture provides a set of YAML templates for deploying the following AWS services :
 - Amazon IAM
-- Amazon VPC
+- Amazon Security Group
 - Amazon EC2
-- Amazon ELB
-- Amazon AutoScaling
-- Amazon CloudFront
-- Amazon RDS
-- Amazon S3
-- Amazon Cloudwatch
 - Amazon Route53
-- Amazon Security Group & NACL
 
 ## Prerequisites Notes
 The Cloudformation Security Group IP address is open by default (testing purpose). You should update the Security Group Access with your own IP Address to ensure your instances security.
@@ -20,18 +13,12 @@ Before you can deploy this process, you need the following:
  - Your AWS account must have one VPC available to be created in the selected region
  - Amazon EC2 key pair
  - Installed Domain in Route 53.
- - Installed Certificate (in your selected region & also one in us-east-1) 
+ - cloudformation-vpc (Assuming you already have installed VPC https://github.com/thinegan/cloudformation-vpc )
 
-## You can launch this CloudFormation stack in the following Region in your account:
+## We have test launch this CloudFormation stack in the following Region in our account:
  - US East (N. Virginia)
- - US East (Ohio)
- - US West (N. California)
- - US West (Oregon)
- - Asia Pacific (Tokyo)
- - Asia Pacific (Singapore)
- - Asia Pacific (Sydney)
 
-![infrastructure-overview](images/webapp-architecture-overview.png)
+![infrastructure-overview](images/MongoDB_Replicaset_in_Private_VPC.png)
 
 The repository consists of a set of nested templates that deploy the following:
 
@@ -260,7 +247,7 @@ If you found yourself wishing this set of frequently asked questions had an answ
 
 ## Contributing
 
-Please [create a new GitHub issue](https://github.com/thinegan/cloudformation-project1/issues/new) for any feature requests, bugs, or documentation improvements. 
+Please [create a new GitHub issue](https://github.com/thinegan/cloudformation-mongodb/issues/new) for any feature requests, bugs, or documentation improvements. 
 
 Where possible, please also [submit a pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/) for the change. 
 
@@ -271,6 +258,6 @@ Thinegan Ratnam
 
 ## Copyright and License
 
-Copyright 2017 Thinegan Ratnam
+Copyright 2018 Thinegan Ratnam
 
 Code released under the MIT License.
