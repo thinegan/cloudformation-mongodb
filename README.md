@@ -113,19 +113,35 @@ Proceed after "Automation Agent Successfully Verified".
 Proceed after "Initialing Automation for your Deployment".
 ![CloudManager-Setup24](images/cm7_setup_Deployment8.png)
 
+Save, Review and Deploy.
 ![CloudManager-Setup25](images/cm7_setup_Deployment9.png)
 
+Replicaset Processes Display Completed!
 ![CloudManager-Setup26](images/cm7_setup_Deployment10.png)
 
+Goto Deployment > Security > MongoDB User.
+Turn on "Enforce Consistent Set".
+Confirm "Enforce Consistent Set".
 ![CloudManager-Setup27](images/cm8_enforce_user_consistent1.png)
 
+Save, Review and Deploy.
 ![CloudManager-Setup28](images/cm8_enforce_user_consistent2.png)
 
+Now, Lets start the step to enable TLS/SSL setting.
+Please ensure you already have certs/pem install in your servers.
+Goto Deployment > Security > Authentication & TLS/SSL.
+Edit Setting and proceed to "Authentication Mechanisms" and Click "Next".
 ![CloudManager-Setup29](images/cm9_setup_ssl1.png)
 
+Enable TLS/SSL option.
+Enter TLS/SSL CA File Path.
+Switch "Client Certificate Mode" to "Require".
 ![CloudManager-Setup30](images/cm9_setup_ssl2.png)
 
+Enter PEM file for Automation, Backup and Monitoring Agent.
+Next Click "Save".
 ![CloudManager-Setup31](images/cm9_setup_ssl3.png)
+
 
 ![CloudManager-Setup32](images/cm9_setup_ssl4.png)
 
