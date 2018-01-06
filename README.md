@@ -32,15 +32,22 @@ The repository consists of a set of nested templates that deploy the following:
 
 ## MongoDB Cloud Manager Setup
 
+Create a New Project, click "New Project"
 ![CloudManager-Setup1](images/cm1_create_organization.png)
 
+Select "Cloud Manager" and Click "Next"
 ![CloudManager-Setup2](images/cm2_create_project_1.png)
 
+Enter Name of your project and click "Next"
 ![CloudManager-Setup3](images/cm2_create_project_2.png)
 
+You project will be created.
 ![CloudManager-Setup4](images/cm2_create_project_3.png)
 
+Goto Project "Deployment". Under "Crytera > Timeclonedbrep", select "Agents" and "Downloads & Settings".
+Since, I'm using Debian Os, select "Ubuntu (15.x, 16.x) - DEB"
 ![CloudManager-Setup5](images/cm3_create_agentid_1.png)
+
 
 ![CloudManager-Setup6](images/cm3_create_agentid_2.png)
 
