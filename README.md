@@ -84,6 +84,30 @@ The repository consists of a set of nested templates that deploy the following:
 
 ![CloudManager-Setup26](images/cm7_setup_Deployment10.png)
 
+![CloudManager-Setup27](images/cm8_enforce_user_consistent1.png)
+
+![CloudManager-Setup28](images/cm8_enforce_user_consistent2.png)
+
+![CloudManager-Setup29](images/cm9_setup_ssl1.png)
+
+![CloudManager-Setup30](images/cm9_setup_ssl2.png)
+
+![CloudManager-Setup31](images/cm9_setup_ssl3.png)
+
+![CloudManager-Setup32](images/cm9_setup_ssl4.png)
+
+![CloudManager-Setup33](images/cm9_setup_ssl5.png)
+
+![CloudManager-Setup34](images/cm9_setup_ssl6.png)
+
+![CloudManager-Setup35](images/cm10_deploy_ssl1.png)
+
+![CloudManager-Setup36](images/cm10_deploy_ssl2.png)
+
+![CloudManager-Setup37](images/cm10_deploy_ssl3.png)
+
+![CloudManager-Setup38](images/cm10_deploy_ssl4.png)
+
 
 Using CloudFormation to deploy and manage services with ECS has a number of nice benefits over more traditional methods ([AWS CLI](https://aws.amazon.com/cli), scripting, etc.). 
 
