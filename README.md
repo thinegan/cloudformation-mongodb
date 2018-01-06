@@ -30,7 +30,9 @@ The repository consists of a set of nested templates that deploy the following:
  - ALB path-based routes for each ECS service to route the inbound traffic to the correct service.
  - Centralized container logging with [Amazon CloudWatch Logs](http://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html).
 
-## Why use AWS CloudFormation with Amazon ECS?
+## MongoDB Cloud Manager Setup
+
+![CloudManager-Setup](images/cm2_create_project_1.png)
 
 Using CloudFormation to deploy and manage services with ECS has a number of nice benefits over more traditional methods ([AWS CLI](https://aws.amazon.com/cli), scripting, etc.). 
 
