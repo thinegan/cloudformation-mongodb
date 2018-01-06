@@ -32,7 +32,33 @@ The repository consists of a set of nested templates that deploy the following:
 
 ## MongoDB Cloud Manager Setup
 
-![CloudManager-Setup](images/cm2_create_project_1.png)
+![CloudManager-Setup1](images/cm1_create_organization.png)
+
+![CloudManager-Setup2](images/cm2_create_project_1.png)
+
+![CloudManager-Setup3](images/cm2_create_project_2.png)
+
+![CloudManager-Setup4](images/cm2_create_project_3.png)
+
+![CloudManager-Setup5](images/cm3_create_agentid_1.png)
+
+![CloudManager-Setup6](images/cm3_create_agentid_2.png)
+
+![CloudManager-Setup7](images/cm4_installed_automation_agent.png)
+
+![CloudManager-Setup8](images/cm5_setup_authentication1.png)
+
+![CloudManager-Setup9](images/cm5_setup_authentication2.png)
+
+![CloudManager-Setup10](images/cm5_setup_authentication3.png)
+
+![CloudManager-Setup11](images/cm5_setup_authentication4.png)
+
+![CloudManager-Setup12](images/cm5_setup_authentication5.png)
+
+![CloudManager-Setup13](images/cm5_setup_authentication6.png)
+
+![CloudManager-Setup14](images/cm5_setup_authentication7.png)
 
 Using CloudFormation to deploy and manage services with ECS has a number of nice benefits over more traditional methods ([AWS CLI](https://aws.amazon.com/cli), scripting, etc.). 
 
