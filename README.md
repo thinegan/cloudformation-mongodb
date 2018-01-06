@@ -45,16 +45,20 @@ You project will be created.
 ![CloudManager-Setup4](images/cm2_create_project_3.png)
 
 Goto Project "Deployment". Under "Crytera > Timeclonedbrep", select "Agents" and "Downloads & Settings".
-Since, I'm using Debian Os, select "Ubuntu (15.x, 16.x) - DEB"
+Since, I'm using Debian Os, select Automation "Ubuntu (15.x, 16.x) - DEB"
 ![CloudManager-Setup5](images/cm3_create_agentid_1.png)
 
-
+Use mmsGroupId and mmsApiKey to setup mms agent in your cloudformation script.
 ![CloudManager-Setup6](images/cm3_create_agentid_2.png)
 
+A completed deployed mms automation agent running after completed cloudformation run. 
 ![CloudManager-Setup7](images/cm4_installed_automation_agent.png)
 
+Goto Deployment > Security > Edit Setting.
+Select "Authentication Mechanisms [X] Username/Password 
 ![CloudManager-Setup8](images/cm5_setup_authentication1.png)
 
+Continue "Next" without enabling SSL. We will enable it on the process.
 ![CloudManager-Setup9](images/cm5_setup_authentication2.png)
 
 ![CloudManager-Setup10](images/cm5_setup_authentication3.png)
