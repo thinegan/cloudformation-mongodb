@@ -90,18 +90,27 @@ Goto Deployment > Processes
 Click "Manage Existing"
 ![CloudManager-Setup17](images/cm7_setup_Deployment1.png)
 
+Add Master hostname and mongo port. Turn on "Enable Authentication".
 ![CloudManager-Setup18](images/cm7_setup_Deployment2.png)
 
+Choose, Auth Mechanism "Username/Password".
+Enter Username and Password. Select "Continue".
 ![CloudManager-Setup19](images/cm7_setup_Deployment3.png)
 
+Continue but make sure you see all the processes in your deployment.
 ![CloudManager-Setup20](images/cm7_setup_Deployment4.png)
 
+Check, "I understand that this require..." and click "Continue".
 ![CloudManager-Setup21](images/cm7_setup_Deployment5.png)
 
+Check, "Yes, import users and roles from this deployment item".
+Click "Continue".
 ![CloudManager-Setup22](images/cm7_setup_Deployment6.png)
 
+Proceed after "Automation Agent Successfully Verified".
 ![CloudManager-Setup23](images/cm7_setup_Deployment7.png)
 
+Proceed after "Initialing Automation for your Deployment".
 ![CloudManager-Setup24](images/cm7_setup_Deployment8.png)
 
 ![CloudManager-Setup25](images/cm7_setup_Deployment9.png)
