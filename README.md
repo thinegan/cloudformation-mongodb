@@ -61,20 +61,33 @@ Select "Authentication Mechanisms [X] Username/Password
 Continue "Next" without enabling SSL. We will enable it on the process.
 ![CloudManager-Setup9](images/cm5_setup_authentication2.png)
 
+Save and Initiate first Credential will be blank password.
+Remember, you need re-run this credential process again to generate new password.
 ![CloudManager-Setup10](images/cm5_setup_authentication3.png)
 
+Deploy you changes.
 ![CloudManager-Setup11](images/cm5_setup_authentication4.png)
 
+Re-run the entire credential process again, only this time Agent mms-automation
+user will generate a password. Don't Save and Deploy yet.
 ![CloudManager-Setup12](images/cm5_setup_authentication5.png)
 
+Login to your Mongo Replica Master and create admin user first, based on the credential you got from Cloud Manager.
 ![CloudManager-Setup13](images/cm5_setup_authentication6.png)
 
+Now, Save, Review and Deploy your changes,
 ![CloudManager-Setup14](images/cm5_setup_authentication7.png)
 
+Next, Goto Deployment > Server.
+Install Monitoring Agent in Master Replica
+Install Monitoring and Backup Agent in Secondary Replica
 ![CloudManager-Setup15](images/cm6_setup_monitoring_backup1.png)
 
+Confirm, Review and Deploy.
 ![CloudManager-Setup16](images/cm6_setup_monitoring_backup2.png)
 
+Goto Deployment > Processes
+Click "Manage Existing"
 ![CloudManager-Setup17](images/cm7_setup_Deployment1.png)
 
 ![CloudManager-Setup18](images/cm7_setup_Deployment2.png)
