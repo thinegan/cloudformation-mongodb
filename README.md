@@ -142,39 +142,70 @@ Enter PEM file for Automation, Backup and Monitoring Agent.
 Next Click "Save".
 ![CloudManager-Setup31](images/cm9_setup_ssl3.png)
 
-
+Save, Review and Deploy.
 ![CloudManager-Setup32](images/cm9_setup_ssl4.png)
 
+Proceed, Review and Deploy.
 ![CloudManager-Setup33](images/cm9_setup_ssl5.png)
 
+Changes will shows as Enabled in TLS/SSL.
 ![CloudManager-Setup34](images/cm9_setup_ssl6.png)
 
+Next, to Ensure the TLS/SSL support enabled in the Mongo replicaset,
+Goto Deployment > Processes. Select Replicaset Name and choose "Modify" setting.
+Update the Following:
+DB Directory Path Prefix = /data
+bindIp = 0.0.0.0
+sslMode = requireSSL
+sslPEMKeyFile = /etc/ssl/certs/mongodb.pem
+Then, click "Apply".
 ![CloudManager-Setup35](images/cm10_deploy_ssl1.png)
 
+Now continue the previous step for the rest of the servers.
+Mostly the update is just the following :
+sslMode = requireSSL
+sslPEMKeyFile = /etc/ssl/certs/mongodb.pem
+You will see the icon changes in your replicaset during this process.
 ![CloudManager-Setup36](images/cm10_deploy_ssl2.png)
 
+Save, Review, Confirm and Deploy.
 ![CloudManager-Setup37](images/cm10_deploy_ssl3.png)
 
+Once Deploy is completed, you can double check the SSL/TLS changes by select a host and click the connect option to see example of connection command.
 ![CloudManager-Setup38](images/cm10_deploy_ssl4.png)
 
+Click "Metric" to monitor all MongoDB Traffic/Usage.
 ![CloudManager-Setup39](images/cm11_test_deployment1.png)
 
+Refer to "Data Explorer" for overall Data list.
 ![CloudManager-Setup40](images/cm12_monitor_cluster1.png)
 
+Adding a New User. Click "Add New User".
 ![CloudManager-Setup41](images/cm13_test_data1.png)
 
+Add the following.
+Identitier: test (dbname)
+username: user1
+Roles: dbOwner
+Password: xxxxxx
+Click "Add User".
 ![CloudManager-Setup42](images/cm14_add_user_role1.png)
 
+Save, Review and Deploy.
 ![CloudManager-Setup43](images/cm14_add_user_role2.png)
 
+Once changes take effects. You can double check your changes in your cli.
 ![CloudManager-Setup44](images/cm14_add_user_role3.png)
 
 ![CloudManager-Setup45](images/cm14_add_user_role4.png)
 
+Troubleshoot Slow Query by Checking "Real Time" and check slowest operation.
 ![CloudManager-Setup46](images/cm15_monitor_slowquery1.png)
 
+Also you can set log rotate from by your preference. 
 ![CloudManager-Setup47](images/cm16_setup_log1.png)
 
+Finaly, you can remove the replicaset if you don't like and rebuild all over again.
 ![CloudManager-Setup48](images/cm17_remove_cloud_manager1.png)
 
 Using CloudFormation to deploy and manage services with ECS has a number of nice benefits over more traditional methods ([AWS CLI](https://aws.amazon.com/cli), scripting, etc.). 
