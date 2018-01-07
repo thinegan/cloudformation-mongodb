@@ -78,8 +78,8 @@ Login to your Mongo Replica Master and create admin user first, based on the cre
 Now, Save, Review and Deploy your changes,
 ![CloudManager-Setup14](images/cm5_setup_authentication7.png)
 
-Next, Goto Deployment > Server.
-Install Monitoring Agent in Master Replica
+Next, Goto Deployment > Server.  
+Install Monitoring Agent in Master Replica  
 Install Monitoring and Backup Agent in Secondary Replica
 ![CloudManager-Setup15](images/cm6_setup_monitoring_backup1.png)
 
@@ -103,7 +103,7 @@ Continue but make sure you see all the processes in your deployment.
 Check, "I understand that this require..." and click "Continue".
 ![CloudManager-Setup21](images/cm7_setup_Deployment5.png)
 
-Check, "Yes, import users and roles from this deployment item".
+Check, "Yes, import users and roles from this deployment item".  
 Click "Continue".
 ![CloudManager-Setup22](images/cm7_setup_Deployment6.png)
 
@@ -119,26 +119,26 @@ Save, Review and Deploy.
 Replicaset Processes Display Completed!
 ![CloudManager-Setup26](images/cm7_setup_Deployment10.png)
 
-Goto Deployment > Security > MongoDB User.
-Turn on "Enforce Consistent Set".
+Goto Deployment > Security > MongoDB User.  
+Turn on "Enforce Consistent Set".  
 Confirm "Enforce Consistent Set".
 ![CloudManager-Setup27](images/cm8_enforce_user_consistent1.png)
 
 Save, Review and Deploy.
 ![CloudManager-Setup28](images/cm8_enforce_user_consistent2.png)
 
-Now, Lets start the step to enable TLS/SSL setting.
-Please ensure you already have certs/pem install in your servers.
-Goto Deployment > Security > Authentication & TLS/SSL.
+Now, Lets start the step to enable TLS/SSL setting.  
+Please ensure you already have certs/pem install in your servers.  
+Goto Deployment > Security > Authentication & TLS/SSL.  
 Edit Setting and proceed to "Authentication Mechanisms" and Click "Next".
 ![CloudManager-Setup29](images/cm9_setup_ssl1.png)
 
-Enable TLS/SSL option.
-Enter TLS/SSL CA File Path.
+Enable TLS/SSL option.  
+Enter TLS/SSL CA File Path.  
 Switch "Client Certificate Mode" to "Require".
 ![CloudManager-Setup30](images/cm9_setup_ssl2.png)
 
-Enter PEM file for Automation, Backup and Monitoring Agent.
+Enter PEM file for Automation, Backup and Monitoring Agent.  
 Next Click "Save".
 ![CloudManager-Setup31](images/cm9_setup_ssl3.png)
 
@@ -151,8 +151,8 @@ Proceed, Review and Deploy.
 Changes will shows as Enabled in TLS/SSL.
 ![CloudManager-Setup34](images/cm9_setup_ssl6.png)
 
-Next, to Ensure the TLS/SSL support enabled in the Mongo replicaset,
-Goto Deployment > Processes. Select Replicaset Name and choose "Modify" setting.
+Next, to Ensure the TLS/SSL support enabled in the Mongo replicaset,  
+Goto Deployment > Processes. Select Replicaset Name and choose "Modify" setting.  
 Update the Following:  
 DB Directory Path Prefix = /data  
 bindIp = 0.0.0.0  
@@ -162,41 +162,42 @@ Then, click "Apply".
 ![CloudManager-Setup35](images/cm10_deploy_ssl1.png)
 
 Now continue the previous step for the rest of the servers.
-Mostly the update is just the following :
-sslMode = requireSSL
-sslPEMKeyFile = /etc/ssl/certs/mongodb.pem
+Mostly the update is just the following :  
+sslMode = requireSSL  
+sslPEMKeyFile = /etc/ssl/certs/mongodb.pem  
 You will see the icon changes in your replicaset during this process.
 ![CloudManager-Setup36](images/cm10_deploy_ssl2.png)
 
 Save, Review, Confirm and Deploy.
 ![CloudManager-Setup37](images/cm10_deploy_ssl3.png)
 
-Once Deploy is completed, you can double check the SSL/TLS changes by select a host and click the connect option to see example of connection command.
+Proceed to Confirm and Deploy
 ![CloudManager-Setup38](images/cm10_deploy_ssl4.png)
 
-Click "Metric" to monitor all MongoDB Traffic/Usage.
+Once Deploy is completed, you can double check the SSL/TLS changes by select a host and click the connect option to see example of connection command.
 ![CloudManager-Setup39](images/cm11_test_deployment1.png)
 
-Refer to "Data Explorer" for overall Data list.
+Click "Metric" to monitor all MongoDB Traffic/Usage.
 ![CloudManager-Setup40](images/cm12_monitor_cluster1.png)
 
-Adding a New User. Click "Add New User".
+Refer to "Data Explorer" for overall Data list.
 ![CloudManager-Setup41](images/cm13_test_data1.png)
 
-Add the following.
-Identitier: test (dbname)
-username: user1
-Roles: dbOwner
-Password: xxxxxx
-Click "Add User".
+Adding a New User. Click "Add New User".
 ![CloudManager-Setup42](images/cm14_add_user_role1.png)
 
-Save, Review and Deploy.
+Add the following.  
+Identitier: test (dbname)  
+username: user1  
+Roles: dbOwner  
+Password: xxxxxx  
+Click "Add User".
 ![CloudManager-Setup43](images/cm14_add_user_role2.png)
 
-Once changes take effects. You can double check your changes in your cli.
+Save, Review and Deploy.
 ![CloudManager-Setup44](images/cm14_add_user_role3.png)
 
+Once changes take effects. You can double check your changes in your cli.
 ![CloudManager-Setup45](images/cm14_add_user_role4.png)
 
 Troubleshoot Slow Query by Checking "Real Time" and check slowest operation.
