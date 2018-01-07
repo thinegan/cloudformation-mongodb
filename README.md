@@ -153,11 +153,11 @@ Changes will shows as Enabled in TLS/SSL.
 
 Next, to Ensure the TLS/SSL support enabled in the Mongo replicaset,
 Goto Deployment > Processes. Select Replicaset Name and choose "Modify" setting.
-Update the Following:
-DB Directory Path Prefix = /data
-bindIp = 0.0.0.0
-sslMode = requireSSL
-sslPEMKeyFile = /etc/ssl/certs/mongodb.pem
+Update the Following:  
+DB Directory Path Prefix = /data  
+bindIp = 0.0.0.0  
+sslMode = requireSSL  
+sslPEMKeyFile = /etc/ssl/certs/mongodb.pem  
 Then, click "Apply".
 ![CloudManager-Setup35](images/cm10_deploy_ssl1.png)
 
